@@ -1,0 +1,156 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<nav class="navbar navbar-expand-md navbar-light" style="background-color: #0275D8;">
+    <a class="navbar-brand py-0">
+        <img src="/assets/jio128.png" height="28" alt="CoolBrand">
+    </a>
+    <span class="navbar-text py-0 text-white">
+        <!-- <i class="fa fa-spinner fa-spin spinnerpos" *ngIf="loading"></i> -->
+        Filter: {{filter}}
+    </span>
+</nav>
+<div class="table-padding">
+    <div class="rotate">
+        <button class="mr-2 rotate-button homedash btn btn-light btn-sm" (click)="homeDashboard()">Dashboard</button>
+        <button class="mr-2 rotate-button errordash btn btn-light btn-sm" (click)="errorDashboard()">Failure
+            Stats</button>
+        <button class="mr-2 rotate-button btn btn-light btn-sm trackdash" id="trackdash" (click)="trackingDashboard()">Tracking</button>
+        <button class="mr-2 rotate-button btn btn-light btn-sm" (click)="exporttocsv()">Export to CSV</button>
+        <button class="mr-2 rotate-button btn btn-light btn-sm" (click)="logout()">Logout</button>
+    </div>
+
+    <div class="ag-pos">
+        <ag-grid-angular style="width: 100%; height: 94%" class="ag-theme-blue" [columnDefs]="columnDefs" rowSelection="multiple" (gridReady)="onGridReady($event)" [defaultColDef]="defaultColDef" [pagination]="true" [paginationPageSize]="paginationPageSize" enableCellTextSelection=true (rowClicked)='onRowClicked($event)' (rowDoubleClicked)="lineItems(lineitems)">
+
+        </ag-grid-angular>
+    </div>
+    
+    <!-- -->
+    <a class="float" (click)="openVerticallyCentered(content)">
+        <i class="fa fa-filter fa-2x my-float"></i>
+    </a>
+</div>
+
+<ng-template #content let-modal id="myModal">
+    <div class="modal-header">
+        <h4 class="modal-title">Filter</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+
+
+        <div class="form-group">
+            <label for="Dashboard"><span class="req">* </span>Select Date</label>
+            <div class="form-control">
+                <ejs-daterangepicker format='yyyy-MM-dd' id="calendar" [(ngModel)]="dateRanage" [startDate]='startDate' [endDate]='endDate' [htmlAttributes]="htmlAttributes" [presets]="presets" [max]='maxDate'>
+                </ejs-daterangepicker>
+
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="Dashboard"><span class="req">* </span>Select Dashboard</label>
+            <select name="dashboard" id="dashboard" [(ngModel)]="whichdashboard" class="form-control dashboardhide" (ngModelChange)="nameChanged1($event)">
+                <option value="" disabled selected>Choose below</option>
+                <option value="recharge" *ngIf="recharge">Recharge</option>
+                <option value="billplanchange" *ngIf="billplanchange">BillPlanChange</option>
+                <option value="dealerorder" *ngIf="dealerorder">DealerOrder</option>
+                <option value="tpdigitalservice" *ngIf="tpdigitalservice">TPDigitalService</option>
+                <option value="digitalplanconfiguration" *ngIf="digitalplanconfiguration">DigitalPlanConfiguration
+                </option>
+                <option value="entplanconfiguration" *ngIf="entplanconfiguration">ENTPlanConfiguration</option>
+                <option value="reconnection" *ngIf="reconnection">Reconnection</option>
+            </select>
+        </div>
+
+        <div class="form-group recharge billplanchange dealerorder tpdigitalservice digitalplanconfiguration entplanconfiguration reconnection" *ngIf="statecomm">
+            <label for="criteria">Select State</label>
+            <select name="type" id="show" [(ngModel)]="state" class="form-control">
+                <option value="" disabled selected>Select State</option>
+                <option value="All">All</option>
+                <option value="COMPLETED">Completed</option>
+                <option value="INPROGRESS">In Progress</option>
+                <option value="FAILED">Failed</option>
+                <option value="CANCELLED">Cancelled</option>
+            </select>
+        </div>
+
+        <div class="form-group billplanchange" *ngIf="typebill">
+            <label for="criteria">Select Business Interaction</label>
+            <select name="type" id="show" [(ngModel)]="businteraction" class="form-control">
+                <option value="" disabled selected>Business Interaction</option>
+                <option value="All">All</option>
+                <option value="ADD">Add</option>
+                <option value="CHANGE">Change</option>
+                <option value="REMOVE">Remove</option>
+            </select>
+        </div>
+
+        <!-- <div class="form-group recharge" *ngIf="rechargeref">
+            <label for="criteria">Recharge Reference</label>
+            <input class="form-control form-control-sm" type="text" [(ngModel)]="rechargerefno" placeholder="Recharge Ref No">
+        </div> -->
+        <div class="form-group recharge billplanchange tpdigitalservice digitalplanconfiguration entplanconfiguration" *ngIf="serviceidwdealer">
+            <label for="criteria">Service Id</label>
+            <input class="form-control form-control-sm" type="text" [(ngModel)]="serviceid" placeholder="Service Id">
+        </div>
+        <div class="form-group recharge tpdigitalservice digitalplanconfiguration entplanconfiguration reconnection" *ngIf="customeridwbill">
+            <label for="criteria">Customer Id</label>
+            <input class="form-control form-control-sm" type="text" [(ngModel)]="customerid" placeholder="Customer Id">
+        </div>
+        <div class="form-group recharge tpdigitalservice digitalplanconfiguration entplanconfiguration reconnection" *ngIf="transrefnowbillnorder">
+            <label for="criteria">Trans Ref No</label>
+            <input class="form-control form-control-sm" type="text" [(ngModel)]="transrefno" placeholder="Trans Ref No">
+        </div>
+        <div class="form-group dealerorder" *ngIf="orderrefnodealer">
+            <label for="criteria">Order Ref No</label>
+            <input class="form-control form-control-sm" type="text" [(ngModel)]="orderrefno" placeholder="Order Ref No">
+        </div>
+        <div class="form-group dealerorder" *ngIf="productiddealer">
+            <label for="criteria">Product Id</label>
+            <input class="form-control form-control-sm" type="text" [(ngModel)]="productid" placeholder="Product Id">
+        </div>
+        <div class="form-group recharge billplanchange dealerorder tpdigitalservice digitalplanconfiguration entplanconfiguration reconnection" *ngIf="noofrowscomm">
+            <label for="criteria">No. of Rows</label>
+            <input class="form-control form-control-sm" type="text" [(ngModel)]="noofrows" placeholder="No. of Rows">
+        </div>
+        <div class="form-group recharge billplanchange tpdigitalservice digitalplanconfiguration entplanconfiguration reconnection">
+            <label for="criteria">Reference No</label>
+            <input class="form-control form-control-sm" type="text" [(ngModel)]="referenceno" placeholder="Reference No">
+        </div>
+
+        <div class="container form-group">
+            <div class="row">
+                <!-- add something -->
+            </div>
+            <div class="row">
+                <div class="col">
+                    <ngb-timepicker [(ngModel)]="time1"></ngb-timepicker>
+                </div>
+                <div class="col">
+                    <ngb-timepicker [(ngModel)]="time2"></ngb-timepicker>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer form-group">
+            <button type="button" class="btn btn-light" (click)="modal.close('Close click')">Close</button>
+            <button type="button" class="btn btn-light" (click)="updateRows(); modal.close('Close click')">Search</button>
+        </div>
+
+    </div>
+</ng-template>
+
+<div class="footerb">
+    <app-test (buttonClicked)="parrentEventHandlerFunction($event)"></app-test>
+    <app-milestone-modal (buttonClicked)="parrentEventHandlerFunctionMilestone($event)"></app-milestone-modal>
+    <i class="fa fa-spinner fa-spin spinnerpos" [value]="progressmsg" *ngIf="loading"></i>
+</div>
+
+<ng-template #lineitems let-modal>
+    <div class="modal-body">
+        <ag-grid-angular style="width: 100%; height: 200px;" class="ag-theme-blue" [columnDefs]="columnDefsLineItems" rowSelection="multiple" (gridReady)="onGridReadyLineItems($event)" [defaultColDef]="defaultColDef" enableCellTextSelection=true>
+        </ag-grid-angular>
+    </div>
+  </ng-template>

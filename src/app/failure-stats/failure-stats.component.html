@@ -1,0 +1,143 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<nav class="navbar navbar-expand-md navbar-light" style="background-color: #0275D8;">
+    <a class="navbar-brand py-0">
+        <img src="/assets/jio128.png" height="28" alt="CoolBrand">
+    </a>
+    <span class="navbar-text py-0 text-white">
+        <!-- <i class="fa fa-spinner fa-spin spinnerpos" *ngIf="loading"></i> -->
+        Filter: {{filter}}
+    </span>
+</nav>
+
+<div class="table-padding">
+
+    <div class="rotate">
+        <button class="mr-2 rotate-button btn btn-light btn-sm" (click)="homeDashboard()">Dashboard</button>
+        <button class="mr-2 rotate-button btn btn-light btn-sm" id="errordash" (click)="errorDashboard()">Failure
+            Stats</button>
+        <button class="mr-2 rotate-button btn btn-light btn-sm" (click)="trackingDashboard()">Tracking</button>
+        <button class="mr-2 rotate-button btn btn-light btn-sm" (click)="exporttocsv()">Export to CSV</button>
+        <button class="mr-2 rotate-button btn btn-light btn-sm" (click)="logout()">Logout</button>
+    </div>
+
+    <div class="ag-pos">
+        <ag-grid-angular style="width: 100%;
+    height: 94%;" class="ag-theme-blue" [columnDefs]="columnDefs" rowSelection="multiple"
+            (gridReady)="onGridReady($event)" [defaultColDef]="defaultColDef" [pagination]="true"
+            [paginationPageSize]="paginationPageSize" enableCellTextSelection=true>
+        </ag-grid-angular>
+    </div>
+
+
+    <a class="float" (click)="openVerticallyCentered(content)">
+        <i class="fa fa-filter fa-2x my-float"></i>
+    </a>
+</div>
+
+<ng-template #content let-modal id="myModal">
+    <div class="modal-header">
+        <h4 class="modal-title">Filter</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+
+        <div class="form-group">
+            <label for="Dashboard"><span class="req">* </span>Select Date</label>
+            <div class="form-control">
+                <ejs-daterangepicker format='yyyy-MM-dd' id="calendar" [(ngModel)]="dateRanage" [startDate]='startDate'
+                    [endDate]='endDate' [htmlAttributes]="htmlAttributes" [presets]="presets" [max]='maxDate'>
+                </ejs-daterangepicker>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="Dashboard"><span class="req">* </span>Select Dashboard</label>
+            <select name="dashboard" id="dashboard" [(ngModel)]="dashboardname" class="form-control dashboardhide"
+                (ngModelChange)="nameChanged($event)">
+                <option value="" disabled selected>Choose below</option>
+                <option value="recharge" *ngIf="recharge">Recharge</option>
+                <option value="billplanchange" *ngIf="billplanchange">BillPlanChange</option>
+                <option value="dealerorder" *ngIf="dealerorder">DealerOrder</option>
+                <option value="tpdigitalservice" *ngIf="tpdigitalservice">TPDigitalService</option>
+                <option value="digitalplanconfiguration" *ngIf="digitalplanconfiguration">DigitalPlanConfiguration
+                </option>
+                <option value="entplanconfiguration" *ngIf="entplanconfiguration">ENTPlanConfiguration</option>
+                <option value="reconnection" *ngIf="reconnection">Reconnection</option>
+            </select>
+        </div>
+
+        <div class="form-group recharge tpdigitalservice digitalplanconfiguration entplanconfiguration"
+            *ngIf="criteriacomm">
+            <label for="criteria"><span class="req">* </span>Select Criteria</label>
+            <select name="criteria" id="criteria" [(ngModel)]="criteriatype" class="form-control">
+                <option value="channel">Channel id</option>
+                <option value="plan">Plan id</option>
+                <option value="circle">Circle id</option>
+            </select>
+        </div>
+
+        <div class="form-group reconnection" *ngIf="criteriareconnection">
+            <label for="criteria"><span class="req">* </span>Select Criteria</label>
+            <select name="criteria" [(ngModel)]="criteriatype" class="form-control">
+                <option value="channel">Channel id</option>
+                <option value="circle">Circle id</option>
+            </select>
+        </div>
+
+        <div class="form-group billplanchange" *ngIf="criteriabill">
+            <label for="criteria"><span class="req">* </span>Select Criteria</label>
+            <select name="criteria" id="criteria" [(ngModel)]="criteriatype" class="form-control">
+                <option value="channel">Channel id</option>
+                <option value="plan">Plan id</option>
+            </select>
+        </div>
+
+        <div class="form-group dealerorder" *ngIf="criteriadealer">
+            <label for="dealerordertype">Select Type</label>
+            <select name="type" id="show" [(ngModel)]="dealerordertype" class="form-control">
+                <option value="channel">Channel id</option>
+                <option value="ordertype">Order type</option>
+            </select>
+        </div>
+
+        <div class="form-group billplanchange" *ngIf="criteriabill">
+            <label for="bi">Select Business Interaction</label>
+            <select name="type" id="show" [(ngModel)]="billtype" class="form-control">
+                <option value="ALL">All</option>
+                <option value="ADD">Add</option>
+                <option value="CHANGE">Change</option>
+                <option value="REMOVE">Remove</option>
+            </select>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                <!-- add something -->
+            </div>
+            <div class="row">
+                <div class="col">
+                    <ngb-timepicker [(ngModel)]="time1"></ngb-timepicker>
+                </div>
+                <div class="col">
+                    <ngb-timepicker [(ngModel)]="time2"></ngb-timepicker>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-light" (click)="modal.close('Close click')">Close</button>
+            <button type="button" class="btn btn-light"
+                (click)="updateRows(); modal.close('Close click')">Search</button>
+        </div>
+
+    </div>
+</ng-template>
+
+<div class="footerb">
+    <app-test (buttonClicked)="parrentEventHandlerFunction($event)"></app-test>
+    <app-milestone-modal (buttonClicked)="parrentEventHandlerFunctionMilestone($event)"></app-milestone-modal>
+    <i class="fa fa-spinner fa-spin spinnerpos" *ngIf="loading"></i>
+</div>

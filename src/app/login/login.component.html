@@ -1,0 +1,128 @@
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<!------ Include the above in your HEAD tag ---------->
+
+
+
+
+<div class="sidenav">
+    <div class="login-main-text">
+        <h2>User<br> Login Page</h2>
+        <p>Login or register from here to access.</p>
+    </div>
+
+</div>
+
+
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" style="color:white;">User Manager</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
+         <span class="navbar-toggler-icon"></span>
+         </button>
+    <div class="collapse navbar-collapse" id="navbarColor02">
+        <ul class="navbar-nav mr-auto">
+            <!-- <li class="nav-item active">
+                  <a class="nav-link" (click)="onOpenModal(null, 'add')"><span class="sr-only">(current)</span></a>
+               </li> -->
+        </ul>
+        <form class="form-inline my-2 my-lg-0">
+            <button class="btn btn-outline-success my-2 my-sm-0" (click)="openBackDropCustomClass(content)" type="submit">Request Access</button>
+        </form>
+    </div>
+</nav>
+
+
+<div class="main">
+    <div class="col-md-6 col-sm-12">
+        <div class="login-form">
+            <form #loginForm="ngForm">
+                <!-- (ngModelChange)="username = $event.toLowerCase()" -->
+                <div class="form-group">
+                    <label>User Name</label>
+                    <input type="text" class="form-control" name="username" [(ngModel)]="username" id="email" placeholder="username" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" class="form-control" name="password" [(ngModel)]="password" id="password" placeholder="password" required>
+                </div>
+                <button type="submit" class="btn btn-black" name="Login" id="go" value="Login" (click)="ldaprequest()" [disabled]="loginForm.form.invalid">Login
+                     <i class="fa fa-spinner fa-spin" *ngIf="loading"></i>
+                  </button>
+                <br>
+                <div *ngIf="loginalertshow" class="alert alert-danger" role="alert">
+                    {{loginalert}}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<ng-template #content let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title">Please fill following details</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+       <span aria-hidden="true">&times;</span>
+     </button>
+    </div>
+    <div class="modal-body">
+        <div *ngIf="alert" class="alert alert-primary" role="alert">
+            {{userMessage}}
+        </div>
+        <div class="form-group">
+            <label for="domain"><span class="req">* </span>Enter your Domain Id</label>
+            <input class="form-control form-control-sm" type="text" [(ngModel)]="domainid" placeholder="domain id">
+        </div>
+
+        <!-- <div class="form-group">
+            <label for="criteria"><span class="req">* </span>Select role</label>
+            <select name="type" id="show" [(ngModel)]="useraccessrole" class="form-control">
+               <option value=" " disabled selected>choose following</option>
+               <option value="sadmin">Super Admin</option>
+               <option value="admin">Admin</option>
+               <option value="devops">Devlead</option>
+               <option value="analyst">Analyst</option>
+            </select>
+        </div> -->
+
+
+    </div>
+    <div class="modal-footer ">
+        <button type="button" class="btn btn-link" (click)="openBackDropCustomClass(track)">track request</button>
+        <button type="button " class="btn btn-light " (click)="registerforaccess()">Submit
+        </button>
+        <button type="button " class="btn btn-light " (click)="modal.close( 'Close click') ">Close</button>
+    </div>
+</ng-template>
+
+
+<ng-template #track let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title">Please fill following details</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+       <span aria-hidden="true">&times;</span>
+     </button>
+    </div>
+    <div class="modal-body">
+        <div *ngIf="alerttrack" class="alert alert-primary" role="alert">
+            {{userMessage}}
+        </div>
+        <div class="form-group">
+            <label for="domain"><span class="req">* </span>Enter your Domain Id</label>
+            <input class="form-control form-control-sm" type="text" [(ngModel)]="domainid" placeholder="domain id">
+        </div>
+
+    </div>
+    <div class="modal-footer ">
+        <button type="button " class="btn btn-light " (click)="trackStatus()">Submit
+        </button>
+        <button type="button " class="btn btn-light " (click)="modal.close( 'Close click') ">Close</button>
+    </div>
+</ng-template>
+
+
+
+
+<!-- <button type="button" class="btn btn-primary" (click)="decryptData()">decrypt</button> -->
